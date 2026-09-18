@@ -11,7 +11,8 @@ from .aws import (
 from .scanners import (
     ebs,
     eip,
-    ec2
+    ec2,
+    gcp_compute
 )
 
 
@@ -87,3 +88,8 @@ def scan_aws(
             )
 
     return findings
+
+
+def scan_gcp():
+    """Execute GCP Compute Engine audit."""
+    return gcp_compute.scan()
