@@ -3,6 +3,7 @@ import typer
 from rich.console import Console
 
 from .aws import session
+from .demo import demo_findings
 from .audit import scan_aws
 from .report import render, export
 from .cleanup import execute, plan
@@ -58,6 +59,12 @@ def audit(
         False,
         "--no-ec2",
         help="Skip EC2 utilization scan"
+    ),
+
+    demo: bool = typer.Option(
+        False,
+        "--demo",
+        help="Run with sample data without connecting to AWS"
     )
 ):
     """
@@ -66,17 +73,20 @@ def audit(
 
     try:
 
-        aws_session = session(
-            profile,
-            role_arn
-        )
+        if demo:
+            findings = demo_findings()
+        else:
+            aws_session = session(
+                profile,
+                role_arn
+            )
 
-        findings = scan_aws(
-            aws_session,
-            include_ec2=not no_ec2,
-            days=days,
-            cpu_threshold=cpu_threshold
-        )
+            findings = scan_aws(
+                aws_session,
+                include_ec2=not no_ec2,
+                days=days,
+                cpu_threshold=cpu_threshold
+            )
 
         render(
             findings
